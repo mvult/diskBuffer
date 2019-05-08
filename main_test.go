@@ -2,7 +2,9 @@ package diskBuffer
 
 import (
 	"crypto/sha256"
+	"fmt"
 	"io"
+	"io/ioutil"
 	"math/rand"
 	"os"
 	"testing"
@@ -13,6 +15,7 @@ func TestFillFile(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
+	fmt.Println(source.Name())
 
 	chunk := make([]byte, 1024*1024)
 	var n int
@@ -60,10 +63,12 @@ func TestFillFile(t *testing.T) {
 }
 
 func writeToBuffer(source *os.File) *Buffer {
-	f, err := os.Create("buffer.data")
+	// f, err := os.Create("buffer.data")
+	f, err := ioutil.TempFile("", "buffers")
 	if err != nil {
 		panic(err)
 	}
+	fmt.Println(f.Name())
 	db := New(f)
 
 	chunk := make([]byte, 1024*1024*3)
@@ -74,7 +79,7 @@ func writeToBuffer(source *os.File) *Buffer {
 			n, err = source.Read(chunk)
 			if err != nil {
 				if err == io.EOF {
-					db.MarkComplete()
+					db.SetInboundComplete(true)
 					return
 				}
 				panic(err)

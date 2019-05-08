@@ -18,10 +18,16 @@ func New(f *os.File) *Buffer {
 	return &Buffer{f: f, inboundComplete: false}
 }
 
-func (fb *Buffer) MarkComplete() {
+func (fb *Buffer) SetInboundComplete(b bool) {
 	fb.lock.Lock()
 	defer fb.lock.Unlock()
-	fb.inboundComplete = true
+	fb.inboundComplete = b
+}
+
+func (fb *Buffer) GetInboundComplete() bool {
+	fb.lock.Lock()
+	defer fb.lock.Unlock()
+	return fb.inboundComplete
 }
 
 func (fb *Buffer) Remove() error {
